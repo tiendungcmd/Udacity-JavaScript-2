@@ -20,19 +20,85 @@ footer {
   /* footer styles */
 }
 
+.rover-container {
+  display: flex;
+}
+
+li.rover-card {
+  width: 30%;
+  list-style: none;
+  border: black solid 1px;
+  margin: 10px;
+  text-align: center;
+  border-radius: 10px;
+}
+li.rover-card:hover{
+  background-color: antiquewhite;
+  cursor: pointer;
+}
+
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
+
   /* use mobile */
+  .rover-container {
+    display: flex;
+  }
+
+  li.rover-card {
+    width: 30%;
+    list-style: none;
+    border: black solid 1px;
+    margin: 10px;
+    text-align: center;
+    border-radius: 10px;
+  }
+  li.rover-card:hover{
+    background-color: antiquewhite;
+    cursor: pointer;
+  }
 }
 
 /* -------------------  DESKTOP  -------------------- */
 
 @media (min-width: 1224px) {
-  /* use mobile */
+  .rover-container {
+    display: flex !important;
+  }
+
+  li.rover-card {
+    width: 30%;
+    list-style: none;
+    border: black solid 1px;
+    margin: 10px;
+    text-align: center;
+    border-radius: 10px;
+  }
+  li.rover-card:hover{
+    background-color: antiquewhite;
+    cursor: pointer;
+  }
 }
 
 /* -------------------  LARGE SCREENS  -------------- */
 
 @media (min-width: 1824px) {
+
   /* use mobile */
+  .rover-container {
+    display: flex !important;
+  }
+
+  li.rover-card {
+    width: 30%;
+    list-style: none;
+    border: black solid 1px;
+    margin: 10px;
+    text-align: center;
+    border-radius: 10px;
+  }
+  li.rover-card:hover{
+    background-color: antiquewhite;
+    cursor: pointer;
+  }
 }
