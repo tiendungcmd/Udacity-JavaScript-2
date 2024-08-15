@@ -26,11 +26,12 @@ const App = (state) => {
         <main>
             ${Greeting(store.user.name)}
             <section>
-                <h3>Put things on the page!</h3>
+                <h3>
                 <p>
                 Rover name:
-                ${SectionRover(state)}
+                ${SectionRover(rovers, apod)}
                 </p>
+              </h3>
             </section>
         </main>
         <footer></footer>
@@ -57,28 +58,34 @@ const Greeting = (name) => {
     `
 }
 
-const SectionRover = (store) => {
+const SectionRover = (rovers, apod) => {
     let result = `<ul style="display: flex;"> `
-    store.rovers.forEach(element => {
-        result += `<li class="rover-card"><p >${element}</p></li>`
+    rovers.forEach(element => {
+        result += `<li class="rover-card" onclick="SelectedRover('${element}')"><p >${element}</p></li>`
     });
     result += `</ul>`
-    getImageOfTheDay(store);
+    if (apod) {
+        result += ShowImage(apod);
+        return result
+    }
+    getImageOfMarch(rovers[0]);
+
     return result;
+}
+const SelectedRover = (rover)=>{
+    if (apod) {
+       ShowImage(apod);
+    }
+    getImageOfMarch(rover);
 }
 
 // Example of a pure function that renders infomation requested from the backend
-const ImageOfTheDay = async (apod) => {
-
-    // If image does not already exist, or it is not from today -- request it again
-    const today = new Date()
-    const photodate = new Date(apod.date)
-    console.log(photodate.getDate(), today.getDate());
-
-    console.log(photodate.getDate() === today.getDate());
-    if (!apod || apod.date === today.getDate()) {
-        await getImageOfTheDay(store)
+const ShowImage = (apod) => {
+    if (!apod) {
+        return ''
     }
+
+    const photo = ImageData(apod.image.photos)
 
     // check if the photo of the day is actually type video!
     if (apod.media_type === "video") {
@@ -89,19 +96,31 @@ const ImageOfTheDay = async (apod) => {
         `)
     } else {
         return (`
-            <img src="${apod.image?.url}" height="350px" width="100%" />
-            <p>${apod.image?.explanation}</p>
+            <img src="${photo[0]?.img_src}" height="350px" width="100%" />
+            <h3> Earth Date: <p>${photo[0]?.earth_date}</p></h3>
+            <h3> Status: <p>${photo[0]?.status}</p></p></h3>
+            <h3> Landing Date: <p>${photo[0]?.landing_date}</p></h3>
         `)
     }
 }
 
-// ------------------------------------------------------  API CALLS
+// 
+const ImageData = (images) => {
+    const imageInfo = images.map((item) => ({
+        img_src: item.img_src,
+        earth_date: item.earth_date,
+        landing_date: item.rover.landing_date,
+        status: item.rover.status
+    }))
+        .filter((item) => item.status == 'active')
+    return imageInfo;
+}
 
-// Example API call
-const getImageOfTheDay = async (state) => {
+
+const getImageOfMarch = async (state) => {
     let { apod } = state
 
-    await fetch(`http://localhost:3000/${state}`)
+    await fetch(`http://localhost:3000/state/${state}`)
         .then(res => res.json())
         .then(async apod => await updateStore(store, { apod }))
 
