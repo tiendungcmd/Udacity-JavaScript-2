@@ -72,11 +72,12 @@ const SectionRover = (rovers, apod) => {
 
     return result;
 }
-const SelectedRover = (rover)=>{
-    if (apod) {
-       ShowImage(apod);
+const SelectedRover = (apod) => {
+    if (apod || apod == 'opportunity') {
+        ShowImage(apod);
     }
-    getImageOfMarch(rover);
+    
+    getImageOfMarch(apod);
 }
 
 // Example of a pure function that renders infomation requested from the backend
@@ -84,29 +85,34 @@ const ShowImage = (apod) => {
     if (!apod) {
         return ''
     }
-
-    const photo = ImageData(apod.image.photos)
-
-    // check if the photo of the day is actually type video!
-    if (apod.media_type === "video") {
-        return (`
+    if (apod?.image?.photos || apod == 'opportunity') {
+        const photo = ImageData(apod.image.photos);
+        const img_src = photo[0]?.img_src ?? `https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG`;
+        const status = photo[0]?.status ?? `active`;
+        const earth_date = photo[0]?.earth_date ?? new Date();
+        const landing_date = photo[0]?.landing_date ?? new Date();;
+        // check if the photo of the day is actually type video!
+        if (apod.media_type === "video") {
+            return (`
             <p>See today's featured video <a href="${apod.url}">here</a></p>
             <p>${apod.title}</p>
             <p>${apod.explanation}</p>
         `)
-    } else {
-        return (`
-            <img src="${photo[0]?.img_src}" height="350px" width="100%" />
-            <h3> Earth Date: <p>${photo[0]?.earth_date}</p></h3>
-            <h3> Status: <p>${photo[0]?.status}</p></p></h3>
-            <h3> Landing Date: <p>${photo[0]?.landing_date}</p></h3>
+        } else {
+            return (`
+            <img src="${img_src}" height="350px" width="100%" />
+            <h3> Earth Date: <p>${earth_date}</p></h3>
+            <h3> Status: <p>${status}</p></p></h3>
+            <h3> Landing Date: <p>${landing_date}</p></h3>
         `)
+        }
     }
+    return '';
 }
 
 // 
 const ImageData = (images) => {
-    const imageInfo = images.map((item) => ({
+    const imageInfo = images?.map((item) => ({
         img_src: item.img_src,
         earth_date: item.earth_date,
         landing_date: item.rover.landing_date,
