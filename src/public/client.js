@@ -1,14 +1,14 @@
-let store = {
+let store = Immutable.Map({
     user: { name: "Student" },
     apod: '',
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-}
-
+})
+let selected;
 // add our markup to the page
 const root = document.getElementById('root')
 
 const updateStore = (store, newState) => {
-    store = Object.assign(store, newState)
+    store = store.merge(newState)
     render(root, store)
 }
 
@@ -24,14 +24,15 @@ const App = (state) => {
     return `
         <header></header>
         <main>
-            ${Greeting(store.user.name)}
+            ${Greeting(state.get('user').name)}
             <section>
                 <h3>
                 <p>
                 Rover name:
-                ${SectionRover(rovers, apod)}
+                ${SectionRover(state.get('rovers'), apod)}
                 </p>
               </h3>
+              ${ShowImage(state.get('apod'))}
             </section>
         </main>
         <footer></footer>
@@ -49,7 +50,7 @@ window.addEventListener('load', () => {
 const Greeting = (name) => {
     if (name) {
         return `
-            <h1>Welcome, ${name}!</h1>
+            <h1>Welcome, ${name}! Click one of the buttons below</h1>
         `
     }
 
@@ -64,33 +65,33 @@ const SectionRover = (rovers, apod) => {
         result += `<li class="rover-card" onclick="SelectedRover('${element}')"><p >${element}</p></li>`
     });
     result += `</ul>`
-    if (apod) {
-        result += ShowImage(apod);
-        return result
-    }
-    getImageOfMarch(rovers[0]);
-
     return result;
 }
 const SelectedRover = (apod) => {
-    if (apod || apod == 'opportunity') {
-        ShowImage(apod);
-    }
-    
+    // if (apod || apod == 'opportunity') {
+    //     ShowImage(apod);
+    // }
+    selected = apod;
     getImageOfMarch(apod);
 }
 
 // Example of a pure function that renders infomation requested from the backend
-const ShowImage = (apod) => {
+const ShowImage = (apods) => {
+    if (!apods || apods.get('apod')) {
+        return ''
+    }
+    const apod = apods.get('image').toJS();
     if (!apod) {
         return ''
     }
-    if (apod?.image?.photos || apod == 'opportunity') {
-        const photo = ImageData(apod.image.photos);
-        const img_src = photo[0]?.img_src ?? `https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG`;
+    let image_url = null;
+    if(selected == 'Spirit') image_url = `https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG`;
+    if (apod?.latest_photos) {
+        const photo = ImageData(apod.latest_photos);
+        const img_src = photo[0]?.img_src ?? image_url;
         const status = photo[0]?.status ?? `active`;
         const earth_date = photo[0]?.earth_date ?? new Date();
-        const landing_date = photo[0]?.landing_date ?? new Date();;
+        const landing_date = photo[0]?.landing_date ?? new Date();
         // check if the photo of the day is actually type video!
         if (apod.media_type === "video") {
             return (`
