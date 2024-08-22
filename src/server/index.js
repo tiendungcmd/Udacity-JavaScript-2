@@ -16,10 +16,7 @@ app.use('/', express.static(path.join(__dirname, '../public')))
 app.get('/state/:name', async (req, res) => {
     try{
         const name = req.params.name.toLocaleLowerCase();
-        let url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${name}/photos?sol=1000&page=2&api_key=${process.env.API_KEY}`;
-        if (name == 'opportunity'){
-            url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${name}/photos?earth_date=2015-6-3&api_key=9drRoynCDMn10EHW3hGQvN65n3twcwrd9feyrRBE` 
-        }
+        let url = `https://api.nasa.gov/mars-photos/api/v1/rovers/${name}/latest_photos?api_key=${process.env.API_KEY}`;
         
         let image = await fetch(url)
                 .then(res => res.json())
