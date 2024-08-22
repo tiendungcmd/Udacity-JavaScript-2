@@ -85,29 +85,38 @@ const ShowImage = (apods) => {
         return ''
     }
     let image_url = null;
-    if(selected == 'Spirit') image_url = `https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG`;
+    if (selected == 'Spirit' || selected == 'Opportunity') image_url = `https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG`;
     if (apod?.latest_photos) {
         const photo = ImageData(apod.latest_photos);
         const img_src = photo[0]?.img_src ?? image_url;
         const status = photo[0]?.status ?? `active`;
         const earth_date = photo[0]?.earth_date ?? new Date();
         const landing_date = photo[0]?.landing_date ?? new Date();
-        // check if the photo of the day is actually type video!
-        if (apod.media_type === "video") {
+        if (photo.length == 0) {
             return (`
-            <p>See today's featured video <a href="${apod.url}">here</a></p>
-            <p>${apod.title}</p>
-            <p>${apod.explanation}</p>
-        `)
+                <img src="${img_src}" height="350px" width="100%" />
+                <h3> Earth Date: <p>${earth_date}</p></h3>
+                <h3> Status: <p>${status}</p></p></h3>
+                <h3> Landing Date: <p>${landing_date}</p></h3>
+            `)
         } else {
-            return photo.map(p=>{
+            // check if the photo of the day is actually type video!
+            if (apod.media_type === "video") {
                 return (`
-                       <img src="${p.img_src}" height="350px" width="100%" />
-                       <h3> Earth Date: <p>${p.earth_date}</p></h3>
-                       <h3> Status: <p>${p.status}</p></p></h3>
-                       <h3> Landing Date: <p>${p.landing_date}</p></h3>
-                       `)
-           })
+                <p>See today's featured video <a href="${apod.url}">here</a></p>
+                <p>${apod.title}</p>
+                <p>${apod.explanation}</p>
+            `)
+            } else {
+                return photo.map(p => {
+                    return (`
+                        <img src="${p.img_src ?? image_url}" height="350px" width="100%" />
+                        <h3> Earth Date: <p>${p.earth_date}</p></h3>
+                        <h3> Status: <p>${p.status}</p></p></h3>
+                        <h3> Landing Date: <p>${p.landing_date}</p></h3>
+                        `)
+                })
+            }
         }
     }
     return '';
