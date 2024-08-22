@@ -99,12 +99,14 @@ const ShowImage = (apod) => {
             <p>${apod.explanation}</p>
         `)
         } else {
-            return (`
-            <img src="${img_src}" height="350px" width="100%" />
-            <h3> Earth Date: <p>${earth_date}</p></h3>
-            <h3> Status: <p>${status}</p></p></h3>
-            <h3> Landing Date: <p>${landing_date}</p></h3>
-        `)
+            return photo.map(p=>{
+                return (`
+                       <img src="${p.img_src}" height="350px" width="100%" />
+                       <h3> Earth Date: <p>${p.earth_date}</p></h3>
+                       <h3> Status: <p>${p.status}</p></p></h3>
+                       <h3> Landing Date: <p>${p.landing_date}</p></h3>
+                       `)
+           })
         }
     }
     return '';
